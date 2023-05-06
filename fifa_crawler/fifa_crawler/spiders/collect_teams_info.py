@@ -1,3 +1,4 @@
+# \fifa_crawler\fifa_crawler\spiders\collect_teams_info.py
 import scrapy
 import json
 import re
@@ -20,6 +21,7 @@ class collect_team_info(scrapy.Spider):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
     
     for team in self.teams:
+      # https://sofifa.com/team/10
       url = 'https://sofifa.com' + team['team_url'] + '?units=mks'
       yield scrapy.Request(url=url, headers=headers, callback=self.parse)
   
@@ -49,7 +51,7 @@ class collect_team_info(scrapy.Spider):
 
       team_info["Domestic prestige"] = response.css('ul.pl li:contains("Domestic prestige") span::text').get()
 
-      team_info["Club worth"] = response.css('ul.pl li:contains("Club worth")::text').get()
+      team_info["Club worth"] = response.xpath('//li[contains(label, "Club worth")]/text()').re_first(r'€([\d\.\d\])([BM]')
 
       team_info["Starting XI average age"] = response.css('ul.pl li:contains("Starting XI average age")::text').get()
 
